@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
-import { ArrowLeft, ShoppingCart, Loader2, AlertCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Loader2, AlertCircle, Trash2, Upload, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface OrderItem {
@@ -37,15 +37,13 @@ export default function Checkout() {
 
   // Form states
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [accountContact, setAccountContact] = useState("");
   const [address, setAddress] = useState("");
-  const [notes, setNotes] = useState("");
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const [paymentProofPreview, setPaymentProofPreview] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<(CheckoutProduct & { quantity: number })[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("bank");
-  const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -59,11 +57,7 @@ export default function Checkout() {
 
         if (data) {
           setFullName(data.full_name || "");
-          setEmail(data.email || user.email || "");
-          setPhone(data.phone || "");
           setAddress(data.address || "");
-        } else {
-          setEmail(user.email || "");
         }
       };
 
@@ -131,12 +125,8 @@ export default function Checkout() {
       toast.error("Full name is required");
       return false;
     }
-    if (!email.trim() || !email.includes("@")) {
-      toast.error("Valid email is required");
-      return false;
-    }
-    if (!phone.trim()) {
-      toast.error("Phone number is required");
+    if (!accountContact.trim()) {
+      toast.error("Account/Contact information is required");
       return false;
     }
     if (!address.trim()) {
@@ -154,6 +144,39 @@ export default function Checkout() {
     return true;
   };
 
+  // Handle payment proof file upload
+  const handlePaymentProofChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File size must be less than 5MB");
+        return;
+      }
+
+      // Validate file type
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only JPG, PNG, GIF, or PDF files are allowed");
+        return;
+      }
+
+      setPaymentProof(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPaymentProofPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePaymentProof = () => {
+    setPaymentProof(null);
+    setPaymentProofPreview("");
+  };
+
   // Handle order submission
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,23 +185,6 @@ export default function Checkout() {
 
     setLoading(true);
     try {
-      // Upload payment proof file
-      let paymentProofUrl = null;
-      if (paymentProof) {
-        const fileName = `payment-proof-${Date.now()}-${paymentProof.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("payment-proofs")
-          .upload(fileName, paymentProof);
-
-        if (uploadError) throw uploadError;
-        
-        const { data: urlData } = supabase.storage
-          .from("payment-proofs")
-          .getPublicUrl(fileName);
-        
-        paymentProofUrl = urlData.publicUrl;
-      }
-
       // Create order_items array
       const orderItems: OrderItem[] = checkoutItems.map(item => ({
         product_id: item.id,
@@ -187,21 +193,40 @@ export default function Checkout() {
         unit_price: item.price * (1 - (item.discount_percent || 0) / 100)
       }));
 
+      let paymentProofUrl = null;
+
+      // Upload payment proof if provided
+      if (paymentProof) {
+        const fileName = `${Date.now()}-${fullName.replace(/\s+/g, "-")}-${paymentProof.name}`;
+        const { error: uploadError, data: uploadData } = await supabase.storage
+          .from("payment_proofs")
+          .upload(fileName, paymentProof);
+
+        if (uploadError) {
+          throw new Error(`Failed to upload payment proof: ${uploadError.message}`);
+        }
+
+        // Get public URL
+        const { data } = supabase.storage
+          .from("payment_proofs")
+          .getPublicUrl(fileName);
+
+        paymentProofUrl = data.publicUrl;
+      }
+
       // Create order
       const { data: orderData, error: orderError } = await supabase
         .from("orders")
         .insert({
           user_id: user?.id || null,
           client_name: fullName,
-          client_email: email,
-          client_phone: phone,
+          client_email: accountContact,
+          client_phone: accountContact,
           client_address: address,
           total_amount: total,
           payment_status: "pending",
           order_status: "pending",
-          notes: notes || null,
-          payment_method: selectedPaymentMethod,
-          payment_proof: paymentProofUrl
+          notes: `Account/Contact: ${accountContact}\nPayment Proof: ${paymentProofUrl || "Pending verification"}`
         })
         .select()
         .single();
@@ -228,13 +253,13 @@ export default function Checkout() {
         await clearCart();
       }
 
-      toast.success("Order created successfully!");
+      toast.success("Order created successfully! Our team will verify your payment and contact you soon.");
       
       // Redirect to order confirmation
       navigate(`/order-confirmation/${orderData.id}`);
     } catch (error) {
       console.error("Error creating order:", error);
-      toast.error("Failed to create order. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Failed to create order. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -342,9 +367,9 @@ export default function Checkout() {
           <div className="lg:col-span-2 order-1 lg:order-2">
             <Card className="p-8">
               <form onSubmit={handleSubmitOrder} className="space-y-6">
-                {/* Billing Information */}
+                {/* Customer Information */}
                 <div>
-                  <h2 className="text-xl font-bold mb-4">Billing Information</h2>
+                  <h2 className="text-xl font-bold mb-4">Customer Information</h2>
                   
                   <div className="space-y-4">
                     <div>
@@ -359,31 +384,19 @@ export default function Checkout() {
                       />
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="your@email.com"
-                          disabled={loading}
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <Input
-                          id="phone"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="250 XXX XXX XXX"
-                          disabled={loading}
-                          required
-                        />
-                      </div>
+                    <div>
+                      <Label htmlFor="accountContact">Account / Contact Information *</Label>
+                      <Input
+                        id="accountContact"
+                        value={accountContact}
+                        onChange={(e) => setAccountContact(e.target.value)}
+                        placeholder="e.g., Bank account number, Mobile money number, or contact details"
+                        disabled={loading}
+                        required
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        This is the account or contact method you're paying with
+                      </p>
                     </div>
 
                     <div>
@@ -392,97 +405,82 @@ export default function Checkout() {
                         id="address"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Enter your full address"
+                        placeholder="Enter your full delivery address"
                         disabled={loading}
                         required
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="notes">Additional Notes (Optional)</Label>
-                      <textarea
-                        id="notes"
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        placeholder="Any special instructions for delivery"
-                        disabled={loading}
-                        className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                        rows={4}
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Payment Info */}
+                {/* Payment Proof */}
                 <div className="pt-6 border-t">
-                  <h2 className="text-xl font-bold mb-4">Payment Details</h2>
+                  <h2 className="text-xl font-bold mb-4">Payment Proof *</h2>
                   
-                  {/* Payment Method Selection */}
-                  <div className="space-y-3 mb-6">
-                    {/* Bank Transfer */}
-                    <label className="flex items-start gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all" style={{borderColor: selectedPaymentMethod === "bank" ? "rgb(59, 130, 246)" : "rgb(229, 231, 235)", backgroundColor: selectedPaymentMethod === "bank" ? "rgb(239, 246, 255)" : "transparent"}}>
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="bank"
-                        checked={selectedPaymentMethod === "bank"}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        disabled={loading}
-                        className="mt-1 cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">Bank Transfer</p>
-                        <p className="text-sm text-gray-600 mt-1">Account Name: BuildMart Rwanda Ltd</p>
-                        <p className="text-sm text-gray-600">Account Number: 1234567890</p>
-                        <p className="text-sm text-gray-600">Bank: BK Bank Rwanda</p>
-                      </div>
-                    </label>
-
-                    {/* Mobile Money */}
-                    <label className="flex items-start gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all" style={{borderColor: selectedPaymentMethod === "mobile" ? "rgb(59, 130, 246)" : "rgb(229, 231, 235)", backgroundColor: selectedPaymentMethod === "mobile" ? "rgb(239, 246, 255)" : "transparent"}}>
-                      <input
-                        type="radio"
-                        name="payment"
-                        value="mobile"
-                        checked={selectedPaymentMethod === "mobile"}
-                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        disabled={loading}
-                        className="mt-1 cursor-pointer"
-                      />
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">Mobile Money</p>
-                        <p className="text-sm text-gray-600 mt-1">MTN: +250 78X XXX XXX</p>
-                        <p className="text-sm text-gray-600">Airtel: +250 73X XXX XXX</p>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* Payment Proof Upload */}
-                  <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
-                    <Label className="block mb-3 font-semibold">Upload Payment Proof *</Label>
-                    <p className="text-xs text-gray-600 mb-3">Upload a screenshot or receipt of your payment (PNG, JPG, PDF)</p>
-                    
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-                      <input
-                        type="file"
-                        id="paymentProof"
-                        accept="image/*,.pdf"
-                        onChange={(e) => setPaymentProof(e.target.files?.[0] || null)}
-                        disabled={loading}
-                        className="hidden"
-                      />
-                      <label htmlFor="paymentProof" className="cursor-pointer block">
-                        <div className="text-sm text-gray-600">
-                          <p className="font-medium text-gray-900 mb-1">
-                            {paymentProof ? paymentProof.name : "Click to upload or drag and drop"}
-                          </p>
-                          {!paymentProof && (
-                            <p className="text-xs">PNG, JPG, PDF up to 5MB</p>
-                          )}
-                        </div>
-                      </label>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 mb-4">
+                    <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm">
+                      <p className="font-semibold text-blue-900">Please upload your payment proof</p>
+                      <p className="text-blue-800 mt-1">
+                        Upload a screenshot or image of your payment transaction (bank transfer, mobile money, etc.)
+                      </p>
                     </div>
                   </div>
+
+                  {/* Upload Area */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
+                    {!paymentProof ? (
+                      <label className="cursor-pointer block">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/gif,application/pdf"
+                          onChange={handlePaymentProofChange}
+                          disabled={loading}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col items-center justify-center gap-3">
+                          <Upload className="h-10 w-10 text-muted-foreground" />
+                          <div className="text-center">
+                            <p className="font-medium text-foreground">Click to upload payment proof</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              JPG, PNG, GIF or PDF (Max 5MB)
+                            </p>
+                          </div>
+                        </div>
+                      </label>
+                    ) : (
+                      <div className="flex flex-col items-center gap-4">
+                        {paymentProofPreview.startsWith("data:image") ? (
+                          <div className="relative">
+                            <img
+                              src={paymentProofPreview}
+                              alt="Payment proof preview"
+                              className="max-h-40 rounded-lg border border-gray-200"
+                            />
+                            <CheckCircle2 className="absolute top-2 right-2 h-6 w-6 text-green-600 bg-white rounded-full" />
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm">
+                            <CheckCircle2 className="h-5 w-5 text-green-600" />
+                            <span className="font-medium">{paymentProof.name}</span>
+                          </div>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={removePaymentProof}
+                          disabled={loading}
+                        >
+                          Remove & Upload Different File
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Your payment proof will be verified by our team before processing your order.
+                  </p>
                 </div>
 
                 {/* Submit Button */}
@@ -502,8 +500,8 @@ export default function Checkout() {
                   </button>
                 </div>
 
-                <p className="text-xs text-muted-foreground text-center pt-4">
-                  By placing this order, you agree to our terms and conditions. Your information will be kept secure.
+                <p className="text-xs text-muted-foreground text-center pt-4 border-t">
+                  By placing this order, you agree to our terms and conditions. Your payment proof will be verified by our team.
                 </p>
               </form>
             </Card>
