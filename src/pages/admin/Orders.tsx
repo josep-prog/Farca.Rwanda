@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { EBMDocumentUpload } from "@/components/admin/EBMDocumentUpload";
 import { toast } from "sonner";
 import { Eye, Search, CheckCircle2, Clock, Package, Image as ImageIcon, Download } from "lucide-react";
 
@@ -39,6 +40,7 @@ interface Order {
   payment_status: "pending" | "verified" | "rejected";
   order_status: "pending" | "payment_received" | "processing" | "shipped" | "delivered" | "cancelled";
   payment_proof?: string | null;
+  ebm_document?: string | null;
   created_at: string;
   updated_at: string;
   order_items?: OrderItem[];
@@ -409,6 +411,24 @@ export default function AdminOrders() {
                   </div>
                 </div>
               )}
+
+              {/* EBM Document Upload Section */}
+              <div>
+                <Label className="text-slate-400 text-xs uppercase mb-3 block">
+                  EBM Document (Proof of Purchase)
+                </Label>
+                <EBMDocumentUpload
+                  orderId={selectedOrder.id}
+                  currentEBMDocument={selectedOrder.ebm_document}
+                  onUploadSuccess={(documentUrl) => {
+                    setSelectedOrder({
+                      ...selectedOrder,
+                      ebm_document: documentUrl,
+                    });
+                    toast.success("EBM document uploaded successfully!");
+                  }}
+                />
+              </div>
 
               {/* Status Updates */}
               <div className="grid grid-cols-2 gap-4">

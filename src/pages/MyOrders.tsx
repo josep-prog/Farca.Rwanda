@@ -277,9 +277,9 @@ export default function MyOrders() {
                             Download
                           </Button>
                         ) : (
-                          <span className="text-xs text-muted-foreground">
-                            Pending
-                          </span>
+                          <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-300">
+                            NOT YET
+                          </Badge>
                         )}
                       </TableCell>
 
