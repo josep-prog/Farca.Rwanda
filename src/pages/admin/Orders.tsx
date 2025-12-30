@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Eye, Search, CheckCircle2, Clock, Package } from "lucide-react";
+import { Eye, Search, CheckCircle2, Clock, Package, Image as ImageIcon, Download } from "lucide-react";
 
 interface OrderItem {
   id: string;
@@ -38,6 +38,7 @@ interface Order {
   total_amount: number;
   payment_status: "pending" | "verified" | "rejected";
   order_status: "pending" | "payment_received" | "processing" | "shipped" | "delivered" | "cancelled";
+  payment_proof?: string | null;
   created_at: string;
   updated_at: string;
   order_items?: OrderItem[];
@@ -49,6 +50,7 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [proofPreviewOpen, setProofPreviewOpen] = useState(false);
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
   const [updateData, setUpdateData] = useState({
@@ -312,7 +314,62 @@ export default function AdminOrders() {
                 </p>
               </div>
 
-              {/* Order Items */}
+              {/* Payment Proof */}
+              <div className="border border-slate-700 rounded-lg p-4 bg-slate-700/20">
+                <Label className="text-slate-400 text-xs uppercase mb-3 block">
+                  Payment Proof
+                </Label>
+                {selectedOrder.payment_proof ? (
+                  <div className="space-y-3">
+                    <div className="bg-slate-700 rounded p-3 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ImageIcon className="w-5 h-5 text-blue-400" />
+                        <div>
+                          <p className="text-white text-sm font-medium">Payment Proof Document</p>
+                          <p className="text-slate-400 text-xs">
+                            {selectedOrder.payment_proof.split('/').pop()?.substring(0, 40)}...
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setProofPreviewOpen(true)}
+                          className="text-blue-400 hover:bg-slate-600"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          asChild
+                          className="text-green-400 hover:bg-slate-600"
+                        >
+                          <a href={selectedOrder.payment_proof} target="_blank" rel="noopener noreferrer" download>
+                            <Download className="w-4 h-4 mr-1" />
+                            Download
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-slate-400 text-xs">
+                      Status: <span className={`font-semibold ${
+                        selectedOrder.payment_status === 'verified' ? 'text-green-400' :
+                        selectedOrder.payment_status === 'rejected' ? 'text-red-400' :
+                        'text-yellow-400'
+                      }`}>
+                        {selectedOrder.payment_status.toUpperCase()}
+                      </span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-slate-700/50 rounded p-3 text-center">
+                    <p className="text-slate-400 text-sm">No payment proof uploaded yet</p>
+                  </div>
+                )}
+              </div>
               {selectedOrder.order_items && selectedOrder.order_items.length > 0 && (
                 <div>
                   <Label className="text-slate-400 text-xs uppercase mb-2 block">
@@ -432,6 +489,76 @@ export default function AdminOrders() {
                     : "Update Order"}
                 </Button>
               </DialogFooter>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Proof Preview Modal */}
+      <Dialog open={proofPreviewOpen} onOpenChange={setProofPreviewOpen}>
+        <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Payment Proof - {selectedOrder?.client_name}</DialogTitle>
+          </DialogHeader>
+          
+          {selectedOrder?.payment_proof && (
+            <div className="space-y-4">
+              <div className="bg-slate-700/30 rounded-lg p-4">
+                <img
+                  src={selectedOrder.payment_proof}
+                  alt="Payment Proof"
+                  className="w-full rounded-lg max-h-96 object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%231e293b' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='16' fill='%2394a3b8' text-anchor='middle' dy='.3em'%3EFailed to load image%3C/text%3E%3C/svg%3E";
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 bg-slate-700/20 rounded p-4">
+                <div>
+                  <p className="text-slate-400 text-xs uppercase mb-1">Client Name</p>
+                  <p className="text-white font-medium">{selectedOrder.client_name}</p>
+                </div>
+                <div>
+                  <p className="text-slate-400 text-xs uppercase mb-1">Payment Status</p>
+                  <span className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                    selectedOrder.payment_status === 'verified' ? 'bg-green-900/30 text-green-400' :
+                    selectedOrder.payment_status === 'rejected' ? 'bg-red-900/30 text-red-400' :
+                    'bg-yellow-900/30 text-yellow-400'
+                  }`}>
+                    {selectedOrder.payment_status.toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="text-slate-400 text-xs uppercase mb-1">Amount</p>
+                  <p className="text-white font-semibold">
+                    RWF {(typeof selectedOrder.total_amount === 'string' ? parseFloat(selectedOrder.total_amount) : selectedOrder.total_amount).toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-slate-400 text-xs uppercase mb-1">Date Uploaded</p>
+                  <p className="text-white text-sm">
+                    {new Date(selectedOrder.created_at).toLocaleDateString()} {new Date(selectedOrder.created_at).toLocaleTimeString()}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setProofPreviewOpen(false)}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                <Button
+                  asChild
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  <a href={selectedOrder.payment_proof} target="_blank" rel="noopener noreferrer" download>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Original
+                  </a>
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>

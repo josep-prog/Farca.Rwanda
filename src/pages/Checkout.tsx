@@ -226,7 +226,8 @@ export default function Checkout() {
           total_amount: total,
           payment_status: "pending",
           order_status: "pending",
-          notes: `Account/Contact: ${accountContact}\nPayment Proof: ${paymentProofUrl || "Pending verification"}`
+          payment_proof: paymentProofUrl,
+          notes: `Account/Contact: ${accountContact}`
         })
         .select()
         .single();
