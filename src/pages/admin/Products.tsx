@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Edit2, Trash2, Search, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, X, Upload, Image } from "lucide-react";
 
 interface Product {
   id: string;
@@ -57,7 +57,11 @@ export default function AdminProducts() {
     stock: "",
     category_id: "",
     is_featured: false,
+    images: [] as string[],
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -91,6 +95,7 @@ export default function AdminProducts() {
         stock: product.stock.toString(),
         category_id: product.category_id,
         is_featured: product.is_featured,
+        images: [],
       });
     } else {
       setEditingProduct(null);
@@ -102,9 +107,68 @@ export default function AdminProducts() {
         stock: "",
         category_id: "",
         is_featured: false,
+        images: [],
       });
     }
+    setSelectedFile(null);
+    setImagePreview(null);
     setOpenDialog(true);
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size must be less than 5MB');
+        return;
+      }
+
+      setSelectedFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadImageToStorage = async (file: File): Promise<string | null> => {
+    try {
+      setUploadingImage(true);
+      
+      // Create unique filename
+      const timestamp = Date.now();
+      const fileName = `${timestamp}-${file.name}`;
+      
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(`products/${fileName}`, file);
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(`products/${fileName}`);
+
+      return publicUrlData.publicUrl;
+    } catch (error) {
+      toast.error('Failed to upload image');
+      console.error('Upload error:', error);
+      return null;
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,7 +185,17 @@ export default function AdminProducts() {
     }
 
     try {
-      const productData = {
+      // Upload image if selected
+      let imageUrl: string | null = null;
+      if (selectedFile) {
+        imageUrl = await uploadImageToStorage(selectedFile);
+        if (!imageUrl) {
+          toast.error('Failed to upload image');
+          return;
+        }
+      }
+
+      const productData: any = {
         name: formData.name,
         slug: formData.slug,
         price: parseFloat(formData.price),
@@ -130,6 +204,11 @@ export default function AdminProducts() {
         category_id: formData.category_id,
         is_featured: formData.is_featured,
       };
+
+      // Add image URL to images array if uploaded
+      if (imageUrl) {
+        productData.images = [imageUrl];
+      }
 
       if (editingProduct) {
         const { error } = await supabase
@@ -282,12 +361,62 @@ export default function AdminProducts() {
                   </Label>
                 </div>
 
+                {/* Image Upload Section */}
+                <div className="space-y-3 border-t border-slate-700 pt-4">
+                  <Label className="text-slate-300">Product Image</Label>
+                  
+                  {/* Image Preview */}
+                  {imagePreview && (
+                    <div className="relative w-full h-48 bg-slate-700 rounded-lg overflow-hidden border border-slate-600">
+                      <img 
+                        src={imagePreview} 
+                        alt="Product preview" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagePreview(null);
+                          setSelectedFile(null);
+                        }}
+                        className="absolute top-2 right-2 p-1 bg-red-600 hover:bg-red-700 rounded-full transition"
+                      >
+                        <X className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* File Input */}
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-600 rounded-lg cursor-pointer bg-slate-700/50 hover:bg-slate-700 transition">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                        <p className="text-sm text-slate-300">Click to upload or drag and drop</p>
+                        <p className="text-xs text-slate-500">PNG, JPG, GIF (Max 5MB)</p>
+                      </div>
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                        disabled={uploadingImage}
+                      />
+                    </label>
+                  </div>
+
+                  {selectedFile && (
+                    <p className="text-xs text-slate-400">
+                      Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </p>
+                  )}
+                </div>
+
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                  <Button variant="outline" onClick={() => setOpenDialog(false)} disabled={uploadingImage}>
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-primary hover:bg-primary/90">
-                    {editingProduct ? "Update" : "Create"} Product
+                  <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={uploadingImage}>
+                    {uploadingImage ? "Uploading..." : editingProduct ? "Update" : "Create"} Product
                   </Button>
                 </DialogFooter>
               </form>
