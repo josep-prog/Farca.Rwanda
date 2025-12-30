@@ -44,6 +44,8 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<(CheckoutProduct & { quantity: number })[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("bank");
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
 
   // Pre-fill user data if logged in
   useEffect(() => {
@@ -141,6 +143,10 @@ export default function Checkout() {
       toast.error("Address is required");
       return false;
     }
+    if (!paymentProof) {
+      toast.error("Payment proof is required");
+      return false;
+    }
     if (checkoutItems.length === 0) {
       toast.error("No items in checkout");
       return false;
@@ -156,6 +162,23 @@ export default function Checkout() {
 
     setLoading(true);
     try {
+      // Upload payment proof file
+      let paymentProofUrl = null;
+      if (paymentProof) {
+        const fileName = `payment-proof-${Date.now()}-${paymentProof.name}`;
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from("payment-proofs")
+          .upload(fileName, paymentProof);
+
+        if (uploadError) throw uploadError;
+        
+        const { data: urlData } = supabase.storage
+          .from("payment-proofs")
+          .getPublicUrl(fileName);
+        
+        paymentProofUrl = urlData.publicUrl;
+      }
+
       // Create order_items array
       const orderItems: OrderItem[] = checkoutItems.map(item => ({
         product_id: item.id,
@@ -176,7 +199,9 @@ export default function Checkout() {
           total_amount: total,
           payment_status: "pending",
           order_status: "pending",
-          notes: notes || null
+          notes: notes || null,
+          payment_method: selectedPaymentMethod,
+          payment_proof: paymentProofUrl
         })
         .select()
         .single();
@@ -390,33 +415,72 @@ export default function Checkout() {
 
                 {/* Payment Info */}
                 <div className="pt-6 border-t">
-                  <h2 className="text-xl font-bold mb-4">Payment Method</h2>
+                  <h2 className="text-xl font-bold mb-4">Payment Details</h2>
                   
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 mb-4">
-                    <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm">
-                      <p className="font-semibold text-blue-900">Payment Instructions</p>
-                      <p className="text-blue-800 mt-1">
-                        Our team will contact you after order confirmation to arrange payment details. We accept bank transfers and mobile money.
-                      </p>
-                    </div>
+                  {/* Payment Method Selection */}
+                  <div className="space-y-3 mb-6">
+                    {/* Bank Transfer */}
+                    <label className="flex items-start gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all" style={{borderColor: selectedPaymentMethod === "bank" ? "rgb(59, 130, 246)" : "rgb(229, 231, 235)", backgroundColor: selectedPaymentMethod === "bank" ? "rgb(239, 246, 255)" : "transparent"}}>
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="bank"
+                        checked={selectedPaymentMethod === "bank"}
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        disabled={loading}
+                        className="mt-1 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-900">Bank Transfer</p>
+                        <p className="text-sm text-gray-600 mt-1">Account Name: BuildMart Rwanda Ltd</p>
+                        <p className="text-sm text-gray-600">Account Number: 1234567890</p>
+                        <p className="text-sm text-gray-600">Bank: BK Bank Rwanda</p>
+                      </div>
+                    </label>
+
+                    {/* Mobile Money */}
+                    <label className="flex items-start gap-4 p-4 border-2 rounded-lg cursor-pointer transition-all" style={{borderColor: selectedPaymentMethod === "mobile" ? "rgb(59, 130, 246)" : "rgb(229, 231, 235)", backgroundColor: selectedPaymentMethod === "mobile" ? "rgb(239, 246, 255)" : "transparent"}}>
+                      <input
+                        type="radio"
+                        name="payment"
+                        value="mobile"
+                        checked={selectedPaymentMethod === "mobile"}
+                        onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                        disabled={loading}
+                        className="mt-1 cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-900">Mobile Money</p>
+                        <p className="text-sm text-gray-600 mt-1">MTN: +250 78X XXX XXX</p>
+                        <p className="text-sm text-gray-600">Airtel: +250 73X XXX XXX</p>
+                      </div>
+                    </label>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-4 border rounded-lg bg-secondary/50">
-                      <div className="h-4 w-4 rounded border border-primary" />
-                      <div>
-                        <p className="font-medium">Bank Transfer</p>
-                        <p className="text-sm text-muted-foreground">We'll provide details after confirmation</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-4 border rounded-lg bg-secondary/50">
-                      <div className="h-4 w-4 rounded border border-primary" />
-                      <div>
-                        <p className="font-medium">Mobile Money</p>
-                        <p className="text-sm text-muted-foreground">MTN, Airtel, or other mobile payment</p>
-                      </div>
+                  {/* Payment Proof Upload */}
+                  <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
+                    <Label className="block mb-3 font-semibold">Upload Payment Proof *</Label>
+                    <p className="text-xs text-gray-600 mb-3">Upload a screenshot or receipt of your payment (PNG, JPG, PDF)</p>
+                    
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                      <input
+                        type="file"
+                        id="paymentProof"
+                        accept="image/*,.pdf"
+                        onChange={(e) => setPaymentProof(e.target.files?.[0] || null)}
+                        disabled={loading}
+                        className="hidden"
+                      />
+                      <label htmlFor="paymentProof" className="cursor-pointer block">
+                        <div className="text-sm text-gray-600">
+                          <p className="font-medium text-gray-900 mb-1">
+                            {paymentProof ? paymentProof.name : "Click to upload or drag and drop"}
+                          </p>
+                          {!paymentProof && (
+                            <p className="text-xs">PNG, JPG, PDF up to 5MB</p>
+                          )}
+                        </div>
+                      </label>
                     </div>
                   </div>
                 </div>
