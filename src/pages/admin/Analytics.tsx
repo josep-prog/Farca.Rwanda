@@ -172,7 +172,7 @@ export default function AdminAnalytics() {
           <StatCard
             icon={<DollarSign className="w-6 h-6" />}
             label="Total Revenue"
-            value={`$${monthlyStats
+            value={`RWF ${monthlyStats
               .reduce((sum, m) => sum + m.revenue, 0)
               .toLocaleString()}`}
           />

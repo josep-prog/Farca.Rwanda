@@ -147,7 +147,7 @@ export default function AdminDashboard() {
           <StatCard
             icon={<TrendingUp className="w-6 h-6" />}
             label="Total Revenue"
-            value={`$${stats.totalRevenue.toLocaleString()}`}
+            value={`RWF ${stats.totalRevenue.toLocaleString()}`}
             change="+15% this month"
           />
         </div>
@@ -220,7 +220,7 @@ export default function AdminDashboard() {
                     <tr key={order.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition">
                       <td className="py-3 px-4 text-white font-mono text-xs">{order.id.substring(0, 8)}...</td>
                       <td className="py-3 px-4 text-white">{order.client_name}</td>
-                      <td className="py-3 px-4 text-white font-semibold">${parseFloat(order.total_amount).toFixed(2)}</td>
+                      <td className="py-3 px-4 text-white font-semibold">RWF {parseFloat(order.total_amount).toFixed(2)}</td>
                       <td className="py-3 px-4 text-slate-400">
                         {new Date(order.created_at).toLocaleDateString()}
                       </td>

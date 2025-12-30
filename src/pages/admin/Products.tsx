@@ -220,7 +220,7 @@ export default function AdminProducts() {
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Price ($) *</Label>
+                    <Label className="text-slate-300">Price (RWF) *</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -335,7 +335,7 @@ export default function AdminProducts() {
                         {product.categories?.name || "Uncategorized"}
                       </td>
                       <td className="px-6 py-4 text-white font-semibold">
-                        ${product.price.toFixed(2)}
+                        RWF {product.price.toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
                         <span

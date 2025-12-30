@@ -206,7 +206,7 @@ export default function AdminOrders() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-white font-semibold">
-                        ${(typeof order.total_amount === 'string' ? parseFloat(order.total_amount) : order.total_amount).toFixed(2)}
+                        RWF {(typeof order.total_amount === 'string' ? parseFloat(order.total_amount) : order.total_amount).toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -298,7 +298,7 @@ export default function AdminOrders() {
                     Total Amount
                   </Label>
                   <p className="text-white font-semibold text-lg">
-                    ${(typeof selectedOrder.total_amount === 'string' ? parseFloat(selectedOrder.total_amount) : selectedOrder.total_amount).toFixed(2)}
+                    RWF {(typeof selectedOrder.total_amount === 'string' ? parseFloat(selectedOrder.total_amount) : selectedOrder.total_amount).toFixed(2)}
                   </p>
                 </div>
               </div>
