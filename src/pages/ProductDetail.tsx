@@ -48,11 +48,29 @@ export default function ProductDetail() {
           <ArrowLeft className="h-4 w-4" /> Back to Products
         </Link>
 
-        <div className="grid lg:grid-cols-2 gap-10">
-          {/* Image */}
-          <div className="aspect-square rounded-lg overflow-hidden bg-secondary/30">
-            <img src={product.images[0] || "/placeholder.svg"} alt={product.name} className="w-full h-full object-cover" />
+        <div className="grid lg:grid-cols-2 gap-10 items-start">
+          {/* Image Column */}
+          <div className="space-y-4">
+          {/* Main Image */}
+          <div className="w-full aspect-square rounded-lg overflow-hidden bg-secondary/30 border border-border/50">
+            <img 
+              src={product.images?.[0] || "/placeholder.svg"} 
+              alt={product.name} 
+              className="w-full h-full object-contain" 
+            />
           </div>
+          
+          {/* Image Gallery (if multiple images) */}
+          {product.images && product.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-2">
+              {product.images.map((img, idx) => (
+                <div key={idx} className="aspect-square rounded-md overflow-hidden bg-secondary/30 border border-border/50 cursor-pointer hover:border-primary transition">
+                  <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
           {/* Info */}
           <div className="space-y-6">

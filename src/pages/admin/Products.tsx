@@ -367,11 +367,11 @@ export default function AdminProducts() {
                   
                   {/* Image Preview */}
                   {imagePreview && (
-                    <div className="relative w-full h-48 bg-slate-700 rounded-lg overflow-hidden border border-slate-600">
+                    <div className="relative w-full bg-slate-700 rounded-lg overflow-hidden border border-slate-600 aspect-video">
                       <img 
                         src={imagePreview} 
                         alt="Product preview" 
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                       <button
                         type="button"
@@ -431,6 +431,9 @@ export default function AdminProducts() {
               <thead className="bg-slate-900 border-b border-slate-700">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                    Image
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
                     Product Name
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
@@ -457,6 +460,21 @@ export default function AdminProducts() {
                       key={product.id}
                       className="hover:bg-slate-700/30 transition"
                     >
+                      <td className="px-6 py-4">
+                        {product.images && product.images.length > 0 ? (
+                          <div className="w-16 h-16 bg-slate-700 rounded-md overflow-hidden border border-slate-600">
+                            <img
+                              src={product.images[0]}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 bg-slate-700 rounded-md border border-slate-600 flex items-center justify-center">
+                            <Image className="w-6 h-6 text-slate-500" />
+                          </div>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-white font-medium">
                         {product.name}
                       </td>
@@ -506,7 +524,7 @@ export default function AdminProducts() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
                       {loading ? "Loading..." : "No products found"}
                     </td>
                   </tr>
