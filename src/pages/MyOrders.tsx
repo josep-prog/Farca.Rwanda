@@ -371,13 +371,25 @@ export default function MyOrders() {
               <Button
                 variant="outline"
                 className="w-full gap-2"
-                onClick={() => {
-                  const a = document.createElement("a");
-                  a.href = selectedOrder.ebm_document;
-                  a.download = `EBM_${selectedOrder.id.slice(0, 8)}_${new Date().getTime()}`;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
+                onClick={async () => {
+                  try {
+                    const response = await fetch(selectedOrder.ebm_document);
+                    if (!response.ok) throw new Error("Failed to download document");
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `EBM_${selectedOrder.id.slice(0, 8)}_${new Date().getTime()}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                  } catch (error) {
+                    console.error("Download error:", error);
+                    // Fallback: open in new tab
+                    window.open(selectedOrder.ebm_document, "_blank");
+                  }
                 }}
               >
                 <Download className="h-4 w-4" />
