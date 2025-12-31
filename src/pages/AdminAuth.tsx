@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Lock, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Lock, AlertCircle } from "lucide-react";
 
 export default function AdminAuth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, user, isAdmin, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -92,17 +93,32 @@ export default function AdminAuth() {
             <Label htmlFor="password" className="text-slate-300 mb-2 block text-sm font-medium">
               Password
             </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={loading || authLoading}
-              className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-              required
-              minLength={6}
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading || authLoading}
+                className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors disabled:opacity-50"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                disabled={loading || authLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
 
           <Button
