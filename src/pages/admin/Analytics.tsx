@@ -148,13 +148,13 @@ export default function AdminAnalytics() {
     label: string;
     value: string | number;
   }) => (
-    <Card className="bg-slate-800 border-slate-700 p-6">
+    <Card className="bg-white border-gray-200 p-6 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-slate-400 text-sm font-medium">{label}</p>
-          <p className="text-3xl font-bold text-white mt-2">{value}</p>
+          <p className="text-gray-600 text-sm font-medium">{label}</p>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
         </div>
-        <div className="p-3 bg-primary/20 rounded-lg text-primary">{Icon}</div>
+        <div className="p-3 bg-blue-100 rounded-lg text-blue-600">{Icon}</div>
       </div>
     </Card>
   );
@@ -191,13 +191,13 @@ export default function AdminAnalytics() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Monthly Orders & Revenue */}
-          <Card className="bg-slate-800 border-slate-700 p-6 lg:col-span-2">
-            <h3 className="text-white font-semibold mb-4">Monthly Orders & Revenue</h3>
+          <Card className="bg-white border-gray-200 p-6 lg:col-span-2 shadow-sm">
+            <h3 className="text-gray-900 font-semibold mb-4">Monthly Orders & Revenue</h3>
             {monthlyStats.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyStats}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="month" stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="month" stroke="#6b7280" />
                   <YAxis stroke="#94a3b8" />
                   <Tooltip
                     contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
@@ -209,15 +209,15 @@ export default function AdminAnalytics() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-80 flex items-center justify-center text-slate-400">
+              <div className="h-80 flex items-center justify-center text-gray-500">
                 No data available
               </div>
             )}
           </Card>
 
           {/* Products by Category */}
-          <Card className="bg-slate-800 border-slate-700 p-6">
-            <h3 className="text-white font-semibold mb-4">Products by Category</h3>
+          <Card className="bg-white border-gray-200 p-6 shadow-sm">
+            <h3 className="text-gray-900 font-semibold mb-4">Products by Category</h3>
             {categoryStats.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -239,21 +239,21 @@ export default function AdminAnalytics() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
-                    labelStyle={{ color: "#e2e8f0" }}
+                    contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb" }}
+                    labelStyle={{ color: "#111827" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-80 flex items-center justify-center text-slate-400">
+              <div className="h-80 flex items-center justify-center text-gray-500">
                 No data available
               </div>
             )}
           </Card>
 
           {/* Payment Status Distribution */}
-          <Card className="bg-slate-800 border-slate-700 p-6">
-            <h3 className="text-white font-semibold mb-4">Payment Status</h3>
+          <Card className="bg-white border-gray-200 p-6 shadow-sm">
+            <h3 className="text-gray-900 font-semibold mb-4">Payment Status</h3>
             {paymentStats.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -275,13 +275,13 @@ export default function AdminAnalytics() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
-                    labelStyle={{ color: "#e2e8f0" }}
+                    contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #e5e7eb" }}
+                    labelStyle={{ color: "#111827" }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-80 flex items-center justify-center text-slate-400">
+              <div className="h-80 flex items-center justify-center text-gray-500">
                 No data available
               </div>
             )}

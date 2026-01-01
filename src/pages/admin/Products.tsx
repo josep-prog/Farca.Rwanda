@@ -258,22 +258,22 @@ export default function AdminProducts() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
             <Input
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white"
+              className="pl-10 bg-white border-gray-200 text-gray-900"
             />
           </div>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
-              <Button className="gap-2 bg-primary hover:bg-primary/90" onClick={() => handleOpenDialog()}>
+              <Button className="gap-2 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handleOpenDialog()}>
                 <Plus className="w-4 h-4" />
                 Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700 text-white max-w-2xl">
+            <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl">
               <DialogHeader>
                 <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
               </DialogHeader>
@@ -281,36 +281,36 @@ export default function AdminProducts() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-slate-300">Product Name *</Label>
+                    <Label className="text-gray-700">Product Name *</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g., Ceramic Tiles"
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Slug *</Label>
+                    <Label className="text-gray-700">Slug *</Label>
                     <Input
                       value={formData.slug}
                       onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                       placeholder="e.g., ceramic-tiles"
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Price (RWF) *</Label>
+                    <Label className="text-gray-700">Price (RWF) *</Label>
                     <Input
                       type="number"
                       step="0.01"
                       value={formData.price}
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       placeholder="0.00"
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Discount (%)</Label>
+                    <Label className="text-gray-700">Discount (%)</Label>
                     <Input
                       type="number"
                       value={formData.discount_percent}
@@ -318,28 +318,28 @@ export default function AdminProducts() {
                         setFormData({ ...formData, discount_percent: e.target.value })
                       }
                       placeholder="0"
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Stock</Label>
+                    <Label className="text-gray-700">Stock</Label>
                     <Input
                       type="number"
                       value={formData.stock}
                       onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                       placeholder="0"
-                      className="bg-slate-700 border-slate-600 text-white"
+                      className="bg-white border-gray-200 text-gray-900"
                     />
                   </div>
                   <div>
-                    <Label className="text-slate-300">Category *</Label>
+                    <Label className="text-gray-700">Category *</Label>
                     <Select value={formData.category_id} onValueChange={(value) => setFormData({ ...formData, category_id: value })}>
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
+                      <SelectContent className="bg-white border-gray-200">
                         {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id} className="text-white">
+                          <SelectItem key={cat.id} value={cat.id} className="text-gray-900">
                             {cat.name}
                           </SelectItem>
                         ))}
@@ -356,18 +356,18 @@ export default function AdminProducts() {
                     onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
                     className="rounded"
                   />
-                  <Label htmlFor="featured" className="text-slate-300 cursor-pointer">
+                  <Label htmlFor="featured" className="text-gray-700 cursor-pointer">
                     Mark as Featured
                   </Label>
                 </div>
 
                 {/* Image Upload Section */}
-                <div className="space-y-3 border-t border-slate-700 pt-4">
-                  <Label className="text-slate-300">Product Image</Label>
+                <div className="space-y-3 border-t border-gray-200 pt-4">
+                  <Label className="text-gray-700">Product Image</Label>
                   
                   {/* Image Preview */}
                   {imagePreview && (
-                    <div className="relative w-full bg-slate-700 rounded-lg overflow-hidden border border-slate-600 aspect-video">
+                    <div className="relative w-full bg-gray-100 rounded-lg overflow-hidden border border-gray-200 aspect-video">
                       <img 
                         src={imagePreview} 
                         alt="Product preview" 
@@ -388,11 +388,11 @@ export default function AdminProducts() {
 
                   {/* File Input */}
                   <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-600 rounded-lg cursor-pointer bg-slate-700/50 hover:bg-slate-700 transition">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                        <p className="text-sm text-slate-300">Click to upload or drag and drop</p>
-                        <p className="text-xs text-slate-500">PNG, JPG, GIF (Max 5MB)</p>
+                        <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-700">Click to upload or drag and drop</p>
+                        <p className="text-xs text-gray-500">PNG, JPG, GIF (Max 5MB)</p>
                       </div>
                       <input
                         type="file"
@@ -405,17 +405,17 @@ export default function AdminProducts() {
                   </div>
 
                   {selectedFile && (
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-gray-600">
                       Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                     </p>
                   )}
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpenDialog(false)} disabled={uploadingImage}>
+                  <Button variant="outline" onClick={() => setOpenDialog(false)} disabled={uploadingImage} className="border-gray-300 text-gray-700 hover:bg-gray-100">
                     Cancel
                   </Button>
-                  <Button type="submit" className="bg-primary hover:bg-primary/90" disabled={uploadingImage}>
+                  <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white" disabled={uploadingImage}>
                     {uploadingImage ? "Uploading..." : editingProduct ? "Update" : "Create"} Product
                   </Button>
                 </DialogFooter>
@@ -425,44 +425,44 @@ export default function AdminProducts() {
         </div>
 
         {/* Products Table */}
-        <Card className="bg-slate-800 border-slate-700 overflow-hidden">
+        <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-900 border-b border-slate-700">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Image
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Product Name
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Category
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Price
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Stock
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-gray-200">
                 {filteredProducts.length > 0 ? (
                   filteredProducts.map((product) => (
                     <tr
                       key={product.id}
-                      className="hover:bg-slate-700/30 transition"
+                      className="hover:bg-gray-50 transition"
                     >
                       <td className="px-6 py-4">
                         {product.images && product.images.length > 0 ? (
-                          <div className="w-16 h-16 bg-slate-700 rounded-md overflow-hidden border border-slate-600">
+                          <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden border border-gray-200">
                             <img
                               src={product.images[0]}
                               alt={product.name}
@@ -470,26 +470,26 @@ export default function AdminProducts() {
                             />
                           </div>
                         ) : (
-                          <div className="w-16 h-16 bg-slate-700 rounded-md border border-slate-600 flex items-center justify-center">
-                            <Image className="w-6 h-6 text-slate-500" />
+                          <div className="w-16 h-16 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center">
+                            <Image className="w-6 h-6 text-gray-400" />
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-white font-medium">
+                      <td className="px-6 py-4 text-gray-900 font-medium">
                         {product.name}
                       </td>
-                      <td className="px-6 py-4 text-slate-400">
+                      <td className="px-6 py-4 text-gray-600">
                         {product.categories?.name || "Uncategorized"}
                       </td>
-                      <td className="px-6 py-4 text-white font-semibold">
+                      <td className="px-6 py-4 text-gray-900 font-semibold">
                         RWF {product.price.toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
                             product.stock > 0
-                              ? "bg-green-900/30 text-green-400"
-                              : "bg-red-900/30 text-red-400"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
                           }`}
                         >
                           {product.stock} units
@@ -497,7 +497,7 @@ export default function AdminProducts() {
                       </td>
                       <td className="px-6 py-4">
                         {product.is_featured && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-900/30 text-purple-400">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
                             Featured
                           </span>
                         )}
@@ -507,7 +507,7 @@ export default function AdminProducts() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleOpenDialog(product)}
-                          className="text-blue-400 hover:bg-slate-700"
+                          className="text-blue-600 hover:bg-blue-50"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -515,7 +515,7 @@ export default function AdminProducts() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(product.id)}
-                          className="text-red-400 hover:bg-slate-700"
+                          className="text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -524,7 +524,7 @@ export default function AdminProducts() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
                       {loading ? "Loading..." : "No products found"}
                     </td>
                   </tr>

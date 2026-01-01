@@ -34,7 +34,7 @@ export default function Contact() {
                   {/* CEO Info */}
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">Joseph Nishimwe</h3>
-                    <p className="text-blue-600 font-semibold">Chief Executive Officer</p>
+                    <p className="text-yellow-500 font-semibold">Chief Executive Officer</p>
                   </div>
 
                   <p className="text-gray-700 text-sm leading-relaxed">
@@ -52,13 +52,13 @@ export default function Contact() {
                       href="https://wa.me/250791646062"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline text-sm font-medium block"
+                      className="text-yellow-500 hover:underline text-sm font-medium block"
                     >
                       💬 WhatsApp: +250 791 646 062
                     </a>
                     <a
                       href="tel:+250935254080"
-                      className="text-blue-600 hover:underline text-sm font-medium block"
+                      className="text-yellow-500 hover:underline text-sm font-medium block"
                     >
                       📞 Call: +250 93525408
                     </a>
@@ -75,12 +75,12 @@ export default function Contact() {
               <div className="space-y-4">
                 <Card className="p-6">
                   <div className="flex items-start gap-4">
-                    <Mail className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <Mail className="h-6 w-6 text-yellow-500 mt-0.5 flex-shrink-0" />
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">Email</h3>
                       <a
                         href="mailto:buildmart645@gmail.com"
-                        className="text-blue-600 hover:underline block"
+                        className="text-yellow-500 hover:underline block"
                       >
                         buildmart645@gmail.com
                       </a>
@@ -90,13 +90,13 @@ export default function Contact() {
 
                 <Card className="p-6">
                   <div className="flex items-start gap-4">
-                    <Phone className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <Phone className="h-6 w-6 text-yellow-500 mt-0.5 flex-shrink-0" />
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-3">Phone</h3>
                       <div className="space-y-2">
                         <a
                           href="tel:+250935254080"
-                          className="text-blue-600 hover:underline block"
+                          className="text-yellow-500 hover:underline block"
                         >
                           +250 93525408
                         </a>
@@ -104,7 +104,7 @@ export default function Contact() {
                           href="https://wa.me/250791646062"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline block"
+                          className="text-yellow-500 hover:underline block"
                         >
                           +250 791 646 062 (WhatsApp)
                         </a>
@@ -115,7 +115,7 @@ export default function Contact() {
 
                 <Card className="p-6">
                   <div className="flex items-start gap-4">
-                    <MapPin className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <MapPin className="h-6 w-6 text-yellow-500 mt-0.5 flex-shrink-0" />
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2">Location</h3>
                       <p className="text-gray-700">

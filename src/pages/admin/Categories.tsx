@@ -154,87 +154,87 @@ export default function AdminCategories() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
             <Input
               placeholder="Search categories..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-slate-800 border-slate-700 text-white"
+              className="pl-10 bg-white border-gray-200 text-gray-900"
             />
           </div>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
               <Button
-                className="gap-2 bg-primary hover:bg-primary/90"
+                className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => handleOpenDialog()}
               >
                 <Plus className="w-4 h-4" />
                 Add Category
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700 text-white">
+            <DialogContent className="bg-white border-gray-200 text-gray-900">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-gray-900">
                   {editingCategory ? "Edit Category" : "Add New Category"}
                 </DialogTitle>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <Label className="text-slate-300">Category Name *</Label>
+                  <Label className="text-gray-700">Category Name *</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
                     placeholder="e.g., Tiles"
-                    className="bg-slate-700 border-slate-600 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-slate-300">Slug *</Label>
+                  <Label className="text-gray-700">Slug *</Label>
                   <Input
                     value={formData.slug}
                     onChange={(e) =>
                       setFormData({ ...formData, slug: e.target.value })
                     }
                     placeholder="e.g., tiles"
-                    className="bg-slate-700 border-slate-600 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-slate-300">Icon (optional)</Label>
+                  <Label className="text-gray-700">Icon (optional)</Label>
                   <Input
                     value={formData.icon}
                     onChange={(e) =>
                       setFormData({ ...formData, icon: e.target.value })
                     }
                     placeholder="e.g., grid-3x3"
-                    className="bg-slate-700 border-slate-600 text-white"
+                    className="bg-white border-gray-200 text-gray-900"
                   />
                 </div>
 
                 <div>
-                  <Label className="text-slate-300">Color (optional)</Label>
+                  <Label className="text-gray-700">Color (optional)</Label>
                   <Input
                     type="color"
                     value={formData.color || "#3b82f6"}
                     onChange={(e) =>
                       setFormData({ ...formData, color: e.target.value })
                     }
-                    className="bg-slate-700 border-slate-600 text-white h-10"
+                    className="bg-white border-gray-200 text-gray-900 h-10"
                   />
                 </div>
 
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                  <Button variant="outline" onClick={() => setOpenDialog(false)} className="border-gray-300 text-gray-700 hover:bg-gray-100">
                     Cancel
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     {editingCategory ? "Update" : "Create"} Category
                   </Button>
@@ -250,35 +250,35 @@ export default function AdminCategories() {
             filteredCategories.map((category) => (
               <Card
                 key={category.id}
-                className="bg-slate-800 border-slate-700 p-6 hover:bg-slate-700/50 transition"
+                className="bg-white border-gray-200 p-6 hover:shadow-md transition shadow-sm"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-white font-semibold text-lg">
+                    <h3 className="text-gray-900 font-semibold text-lg">
                       {category.name}
                     </h3>
-                    <p className="text-slate-400 text-sm">/{category.slug}</p>
+                    <p className="text-gray-600 text-sm">/{category.slug}</p>
                   </div>
                   {category.color && (
                     <div
-                      className="w-8 h-8 rounded-lg border-2 border-slate-600"
+                      className="w-8 h-8 rounded-lg border-2 border-gray-300"
                       style={{ backgroundColor: category.color }}
                     ></div>
                   )}
                 </div>
 
                 {category.icon && (
-                  <p className="text-slate-400 text-sm mb-4">
-                    Icon: <span className="text-white">{category.icon}</span>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Icon: <span className="text-gray-900">{category.icon}</span>
                   </p>
                 )}
 
-                <div className="flex gap-2 pt-4 border-t border-slate-700">
+                <div className="flex gap-2 pt-4 border-t border-gray-200">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleOpenDialog(category)}
-                    className="flex-1 text-blue-400 hover:bg-slate-700"
+                    className="flex-1 text-blue-600 hover:bg-blue-50"
                   >
                     <Edit2 className="w-4 h-4 mr-2" />
                     Edit
@@ -287,7 +287,7 @@ export default function AdminCategories() {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete(category.id)}
-                    className="flex-1 text-red-400 hover:bg-slate-700"
+                    className="flex-1 text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
@@ -296,7 +296,7 @@ export default function AdminCategories() {
               </Card>
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-slate-400">
+            <div className="col-span-full text-center py-12 text-gray-500">
               {loading ? "Loading..." : "No categories found"}
             </div>
           )}

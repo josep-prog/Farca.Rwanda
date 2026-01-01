@@ -109,14 +109,14 @@ export default function AdminDashboard() {
     value: string | number;
     change?: string;
   }) => (
-    <Card className="bg-slate-800 border-slate-700 p-6">
+    <Card className="bg-white border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-slate-400 text-sm font-medium">{label}</p>
-          <p className="text-3xl font-bold text-white mt-2">{value}</p>
-          {change && <p className="text-green-400 text-xs mt-1 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> {change}</p>}
+          <p className="text-gray-600 text-sm font-medium">{label}</p>
+          <p className="text-3xl font-bold text-gray-900 mt-2">{value}</p>
+          {change && <p className="text-green-600 text-xs mt-1 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> {change}</p>}
         </div>
-        <div className="p-3 bg-primary/20 rounded-lg text-primary">{Icon}</div>
+        <div className="p-3 bg-blue-100 rounded-lg text-blue-600">{Icon}</div>
       </div>
     </Card>
   );
@@ -155,44 +155,44 @@ export default function AdminDashboard() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Orders Trend */}
-          <Card className="bg-slate-800 border-slate-700 p-6 lg:col-span-2">
-            <h3 className="text-white font-semibold mb-4">Orders & Revenue Trend</h3>
+          <Card className="bg-white border-gray-200 p-6 lg:col-span-2 shadow-sm">
+            <h3 className="text-gray-900 font-semibold mb-4">Orders & Revenue Trend</h3>
             {trends.length > 0 ? (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={trends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="date" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1e293b", border: "1px solid #475569" }}
-                    labelStyle={{ color: "#e2e8f0" }}
+                    contentStyle={{ backgroundColor: "#ffffff", border: "1px solid #d1d5db" }}
+                    labelStyle={{ color: "#111827" }}
                   />
-                  <Line type="monotone" dataKey="orders" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6" }} />
-                  <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981" }} />
+                  <Line type="monotone" dataKey="orders" stroke="#2563eb" strokeWidth={2} dot={{ fill: "#2563eb" }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#16a34a" strokeWidth={2} dot={{ fill: "#16a34a" }} />
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-80 flex items-center justify-center text-slate-400">No data available</div>
+              <div className="h-80 flex items-center justify-center text-gray-500">No data available</div>
             )}
           </Card>
 
           {/* Quick Stats */}
-          <Card className="bg-slate-800 border-slate-700 p-6">
-            <h3 className="text-white font-semibold mb-4">Quick Actions</h3>
+          <Card className="bg-white border-gray-200 p-6 shadow-sm">
+            <h3 className="text-gray-900 font-semibold mb-4">Quick Actions</h3>
             <div className="space-y-3">
-              <Button className="w-full bg-primary hover:bg-primary/90" size="sm">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
                 <Package className="w-4 h-4 mr-2" />
                 Add New Product
               </Button>
-              <Button className="w-full bg-slate-700 hover:bg-slate-600" size="sm">
+              <Button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-900" size="sm">
                 <FolderOpen className="w-4 h-4 mr-2" />
                 Manage Categories
               </Button>
-              <Button className="w-full bg-slate-700 hover:bg-slate-600" size="sm">
+              <Button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-900" size="sm">
                 <ShoppingCart className="w-4 h-4 mr-2" />
                 View All Orders
               </Button>
-              <Button className="w-full bg-slate-700 hover:bg-slate-600" size="sm">
+              <Button className="w-full bg-gray-200 hover:bg-gray-300 text-gray-900" size="sm">
                 <Eye className="w-4 h-4 mr-2" />
                 View Reports
               </Button>
@@ -201,36 +201,36 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Orders */}
-        <Card className="bg-slate-800 border-slate-700 p-6">
-          <h3 className="text-white font-semibold mb-4">Recent Orders</h3>
+        <Card className="bg-white border-gray-200 p-6 shadow-sm">
+          <h3 className="text-gray-900 font-semibold mb-4">Recent Orders</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Order ID</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Client</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Amount</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Date</th>
-                  <th className="text-left py-3 px-4 text-slate-400 font-medium">Status</th>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-3 px-4 text-gray-700 font-medium">Order ID</th>
+                  <th className="text-left py-3 px-4 text-gray-700 font-medium">Client</th>
+                  <th className="text-left py-3 px-4 text-gray-700 font-medium">Amount</th>
+                  <th className="text-left py-3 px-4 text-gray-700 font-medium">Date</th>
+                  <th className="text-left py-3 px-4 text-gray-700 font-medium">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {recentOrders.length > 0 ? (
                   recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition">
-                      <td className="py-3 px-4 text-white font-mono text-xs">{order.id.substring(0, 8)}...</td>
-                      <td className="py-3 px-4 text-white">{order.client_name}</td>
-                      <td className="py-3 px-4 text-white font-semibold">RWF {parseFloat(order.total_amount).toFixed(2)}</td>
-                      <td className="py-3 px-4 text-slate-400">
+                    <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                      <td className="py-3 px-4 text-gray-900 font-mono text-xs">{order.id.substring(0, 8)}...</td>
+                      <td className="py-3 px-4 text-gray-900">{order.client_name}</td>
+                      <td className="py-3 px-4 text-gray-900 font-semibold">RWF {parseFloat(order.total_amount).toFixed(2)}</td>
+                      <td className="py-3 px-4 text-gray-600">
                         {new Date(order.created_at).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                           order.order_status === "delivered"
-                            ? "bg-green-900/30 text-green-400"
+                            ? "bg-green-100 text-green-700"
                             : order.order_status === "shipped"
-                            ? "bg-blue-900/30 text-blue-400"
-                            : "bg-yellow-900/30 text-yellow-400"
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-yellow-100 text-yellow-700"
                         }`}>
                           {order.order_status}
                         </span>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-slate-400">
+                    <td colSpan={5} className="py-8 text-center text-gray-500">
                       No orders yet
                     </td>
                   </tr>

@@ -171,66 +171,66 @@ export default function AdminUsers() {
       <div className="space-y-6">
         {/* Search */}
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
           <Input
             placeholder="Search by email or name..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-800 border-slate-700 text-white"
+            className="pl-10 bg-white border-gray-200 text-gray-900"
           />
         </div>
 
         {/* Users Table */}
-        <Card className="bg-slate-800 border-slate-700 overflow-hidden">
+        <Card className="bg-white border-gray-200 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-900 border-b border-slate-700">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     User
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Joined
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Action
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-gray-200">
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map((userWithRole) => (
                     <tr
                       key={userWithRole.profile.id}
-                      className="hover:bg-slate-700/30 transition"
+                      className="hover:bg-gray-50 transition"
                     >
                       <td className="px-6 py-4">
                         <div>
-                          <p className="text-white font-medium">
+                          <p className="text-gray-900 font-medium">
                             {userWithRole.profile.full_name || "Unknown"}
                           </p>
                           {userWithRole.profile.phone && (
-                            <p className="text-slate-400 text-sm">
+                            <p className="text-gray-600 text-sm">
                               {userWithRole.profile.phone}
                             </p>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-slate-300">
+                      <td className="px-6 py-4 text-gray-900">
                         {userWithRole.profile.email}
                       </td>
                       <td className="px-6 py-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 w-fit ${
                             userWithRole.role === "admin"
-                              ? "bg-purple-900/30 text-purple-400"
-                              : "bg-slate-700 text-slate-300"
+                              ? "bg-purple-100 text-purple-700"
+                              : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {userWithRole.role === "admin" ? (
@@ -241,7 +241,7 @@ export default function AdminUsers() {
                           {userWithRole.role === "admin" ? "Admin" : "User"}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-400 text-sm">
+                      <td className="px-6 py-4 text-gray-600 text-sm">
                         {new Date(userWithRole.profile.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 flex items-center gap-2">
@@ -249,7 +249,7 @@ export default function AdminUsers() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleChangeRole(userWithRole)}
-                          className="text-blue-400 hover:bg-slate-700"
+                          className="text-blue-600 hover:bg-blue-50"
                         >
                           <Edit2 className="w-4 h-4" />
                         </Button>
@@ -260,7 +260,7 @@ export default function AdminUsers() {
                             onClick={() =>
                               handleDeleteRole(userWithRole.profile.id)
                             }
-                            className="text-red-400 hover:bg-slate-700"
+                            className="text-red-600 hover:bg-red-50"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -270,7 +270,7 @@ export default function AdminUsers() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
                       {loading ? "Loading..." : "No users found"}
                     </td>
                   </tr>
@@ -283,9 +283,9 @@ export default function AdminUsers() {
 
       {/* Change Role Dialog */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="bg-slate-800 border-slate-700 text-white">
+        <DialogContent className="bg-white border-gray-200 text-gray-900">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-gray-900">
               Change Role - {selectedUser?.profile.full_name || selectedUser?.profile.email}
             </DialogTitle>
           </DialogHeader>
@@ -293,44 +293,44 @@ export default function AdminUsers() {
           {selectedUser && (
             <div className="space-y-4">
               <div>
-                <Label className="text-slate-400 text-xs uppercase">
+                <Label className="text-gray-600 text-xs uppercase">
                   Email
                 </Label>
-                <p className="text-white">{selectedUser.profile.email}</p>
+                <p className="text-gray-900">{selectedUser.profile.email}</p>
               </div>
 
               <div>
-                <Label className="text-slate-300 mb-2 block">New Role</Label>
+                <Label className="text-gray-700 mb-2 block">New Role</Label>
                 <Select value={newRole} onValueChange={(value: any) => setNewRole(value)}>
-                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectTrigger className="bg-white border-gray-200 text-gray-900">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-700 border-slate-600">
-                    <SelectItem value="user" className="text-white">
+                  <SelectContent className="bg-white border-gray-200">
+                    <SelectItem value="user" className="text-gray-900">
                       User
                     </SelectItem>
-                    <SelectItem value="admin" className="text-white">
+                    <SelectItem value="admin" className="text-gray-900">
                       Admin
                     </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <p className="text-slate-400 text-sm">
+              <p className="text-gray-600 text-sm">
                 Current role:{" "}
-                <span className="text-white font-medium capitalize">
+                <span className="text-gray-900 font-medium capitalize">
                   {selectedUser.role}
                 </span>
               </p>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpenDialog(false)}>
+                <Button variant="outline" onClick={() => setOpenDialog(false)} className="border-gray-300 text-gray-700 hover:bg-gray-100">
                   Cancel
                 </Button>
                 <Button
                   onClick={handleUpdateRole}
                   disabled={updatingUserId === selectedUser.profile.id}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {updatingUserId === selectedUser.profile.id
                     ? "Updating..."
