@@ -21,7 +21,8 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Edit2, Trash2, Search, X, Upload, Image } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, X, Upload, Image, FileText } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Product {
   id: string;
@@ -33,6 +34,9 @@ interface Product {
   category_id: string;
   categories?: { name: string } | null;
   is_featured: boolean;
+  description?: string;
+  general_info?: string;
+  technical_specs?: Record<string, string>;
 }
 
 interface Category {
@@ -57,6 +61,9 @@ export default function AdminProducts() {
     stock: "",
     category_id: "",
     is_featured: false,
+    description: "",
+    general_info: "",
+    technical_specs: {} as Record<string, string>,
     images: [] as string[],
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -95,6 +102,9 @@ export default function AdminProducts() {
         stock: product.stock.toString(),
         category_id: product.category_id,
         is_featured: product.is_featured,
+        description: product.description || "",
+        general_info: product.general_info || "",
+        technical_specs: product.technical_specs || {},
         images: [],
       });
     } else {
@@ -107,6 +117,9 @@ export default function AdminProducts() {
         stock: "",
         category_id: "",
         is_featured: false,
+        description: "",
+        general_info: "",
+        technical_specs: {},
         images: [],
       });
     }
@@ -203,6 +216,11 @@ export default function AdminProducts() {
         stock: parseInt(formData.stock || "0"),
         category_id: formData.category_id,
         is_featured: formData.is_featured,
+        description: formData.description || "",
+        general_info: formData.general_info || "",
+        technical_specs: formData.technical_specs && Object.keys(formData.technical_specs).length > 0 
+          ? formData.technical_specs 
+          : null,
       };
 
       // Add image URL to images array if uploaded
@@ -273,7 +291,7 @@ export default function AdminProducts() {
                 Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl">
+            <DialogContent className="bg-white border-gray-200 text-gray-900 max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
               </DialogHeader>
@@ -359,6 +377,102 @@ export default function AdminProducts() {
                   <Label htmlFor="featured" className="text-gray-700 cursor-pointer">
                     Mark as Featured
                   </Label>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2 border-t border-gray-200 pt-4">
+                  <Label className="text-gray-700 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Short Description
+                  </Label>
+                  <Textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Brief product description (will appear on product list)"
+                    className="bg-white border-gray-200 text-gray-900 min-h-[80px]"
+                  />
+                </div>
+
+                {/* General Content */}
+                <div className="space-y-2">
+                  <Label className="text-gray-700 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    General Content (Uses & Features)
+                  </Label>
+                  <Textarea
+                    value={formData.general_info}
+                    onChange={(e) => setFormData({ ...formData, general_info: e.target.value })}
+                    placeholder="Describe where the product can be used, its benefits, features, and use cases. This will be shown in the 'General' tab on the product page."
+                    className="bg-white border-gray-200 text-gray-900 min-h-[150px]"
+                  />
+                  <p className="text-xs text-gray-500">Help customers understand the product's purpose and features</p>
+                </div>
+
+                {/* Technical Specifications */}
+                <div className="space-y-3">
+                  <Label className="text-gray-700 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Technical Specifications
+                  </Label>
+                  <p className="text-xs text-gray-500">Add key technical details (dimensions, material, color, weight, etc.)</p>
+                  
+                  {Object.entries(formData.technical_specs).map(([key, value], index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        placeholder="e.g., Dimensions"
+                        value={key}
+                        onChange={(e) => {
+                          const newSpecs = { ...formData.technical_specs };
+                          delete newSpecs[key];
+                          newSpecs[e.target.value] = value;
+                          setFormData({ ...formData, technical_specs: newSpecs });
+                        }}
+                        className="bg-white border-gray-200 text-gray-900 w-1/3"
+                      />
+                      <Input
+                        placeholder="e.g., 60cm x 60cm"
+                        value={value}
+                        onChange={(e) => {
+                          const newSpecs = { ...formData.technical_specs };
+                          newSpecs[key] = e.target.value;
+                          setFormData({ ...formData, technical_specs: newSpecs });
+                        }}
+                        className="bg-white border-gray-200 text-gray-900 flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          const newSpecs = { ...formData.technical_specs };
+                          delete newSpecs[key];
+                          setFormData({ ...formData, technical_specs: newSpecs });
+                        }}
+                        className="text-red-600 hover:bg-red-50"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        technical_specs: {
+                          ...formData.technical_specs,
+                          [`spec_${Date.now()}`]: "",
+                        },
+                      });
+                    }}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Specification
+                  </Button>
                 </div>
 
                 {/* Image Upload Section */}
