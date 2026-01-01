@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
+import buildmartLogo from "@/assets/buildmart-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +29,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
+          <img src={buildmartLogo} alt="BuildMart Logo" className="h-10 w-auto" />
           <span className="font-display text-2xl font-bold text-gradient">BuildMart</span>
         </Link>
 

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import buildmartLogo from "@/assets/buildmart-logo.png";
 
 const sidebarItems = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
@@ -50,9 +51,7 @@ export function AdminLayout({ children, pageTitle }: AdminLayoutProps) {
         {/* Logo */}
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <span className="text-primary font-bold">BM</span>
-            </div>
+            <img src={buildmartLogo} alt="BuildMart Logo" className="h-10 w-10 rounded-lg" />
             {sidebarOpen && (
               <div>
                 <p className="text-white font-bold text-sm">BuildMart</p>

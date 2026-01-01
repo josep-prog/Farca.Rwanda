@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin } from "lucide-react";
+import buildmartLogo from "@/assets/buildmart-logo.png";
 
 export function Footer() {
   return (
@@ -7,7 +8,10 @@ export function Footer() {
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="font-display text-xl font-bold text-gradient">BuildMart</h3>
+            <div className="flex items-center gap-2">
+              <img src={buildmartLogo} alt="BuildMart Logo" className="h-8 w-auto" />
+              <h3 className="font-display text-xl font-bold text-gradient">BuildMart</h3>
+            </div>
             <p className="text-sm text-muted-foreground">
               Premium interior materials for building your dream spaces. Quality products with expert guidance.
             </p>

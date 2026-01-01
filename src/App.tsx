@@ -14,6 +14,7 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
 import Auth from "./pages/Auth";
+import Contact from "./pages/Contact";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProducts from "./pages/admin/Products";
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
               <Route path="/orders" element={<MyOrders />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/contact" element={<Contact />} />
 
               {/* Admin Routes */}
               <Route path="/authadmin" element={<AdminAuth />} />
